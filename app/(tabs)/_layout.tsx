@@ -1,10 +1,20 @@
-import { Tabs } from 'expo-router';
+import { Tabs, Redirect } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import { View, Text } from 'react-native';
 import { useCart } from '@/context/CartContext';
+import { useAuth } from '@/context/AuthContext';
+import LoadingSpinner from '@/components/LoadingSpinner';
 
 export default function TabsLayout() {
   const { totalItems } = useCart();
+  const { user, loading } = useAuth();
+
+  if (loading) return <LoadingSpinner />;
+
+  // Admin should never see customer tabs — redirect to admin panel
+  if (user?.role === 'admin') {
+    return <Redirect href="/admin" />;
+  }
 
   return (
     <Tabs
